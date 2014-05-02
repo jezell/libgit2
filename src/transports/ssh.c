@@ -40,9 +40,10 @@ typedef struct {
 static void ssh_error(LIBSSH2_SESSION *session, const char *errmsg)
 {
 	char *ssherr;
+	int errno = libssh2_session_last_errno(session);
 	libssh2_session_last_error(session, &ssherr, NULL, 0);
 
-	giterr_set(GITERR_SSH, "%s: %s", errmsg, ssherr);
+	giterr_set(GITERR_SSH, "%s: %d %s", errmsg, errno, ssherr);
 }
 
 /*
