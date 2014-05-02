@@ -297,6 +297,7 @@ static int _git_ssh_authenticate_session(
 		case GIT_CREDTYPE_SSH_KEY: {
 			git_cred_ssh_key *c = (git_cred_ssh_key *)cred;
 
+			printf("%s %s %s %s", c->username, c->publickey, c->privatekey, c->passphrase);
 			if (c->privatekey)
 				rc = libssh2_userauth_publickey_fromfile(
 					session, c->username, c->publickey,
