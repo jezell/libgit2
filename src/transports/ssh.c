@@ -287,9 +287,11 @@ static int _git_ssh_authenticate_session(
 {
 	int rc;
 
+	printf("AUTHENTICATING SESSION\n");
 	do {
 		switch (cred->credtype) {
 		case GIT_CREDTYPE_USERPASS_PLAINTEXT: {
+			printf("PLAINTEXT\n");
 			git_cred_userpass_plaintext *c = (git_cred_userpass_plaintext *)cred;
 			rc = libssh2_userauth_password(session, c->username, c->password);
 			break;
@@ -297,17 +299,23 @@ static int _git_ssh_authenticate_session(
 		case GIT_CREDTYPE_SSH_KEY: {
 			git_cred_ssh_key *c = (git_cred_ssh_key *)cred;
 
-			printf("%s %s %s %s", c->username, c->publickey, c->privatekey, c->passphrase);
-			if (c->privatekey)
+			if (c->privatekey) {
+				printf("SSH KEY \n");
+				printf("%s %s %s %s\n", c->username, c->publickey, c->privatekey, c->passphrase);
 				rc = libssh2_userauth_publickey_fromfile(
 					session, c->username, c->publickey,
 					c->privatekey, c->passphrase);
-			else
+			}
+			else {
+
+				printf("SSH AGENT \n");
 				rc = ssh_agent_auth(session, c);
+			}
 
 			break;
 		}
 		case GIT_CREDTYPE_SSH_CUSTOM: {
+			printf("SSH CUSTOM \n");
 			git_cred_ssh_custom *c = (git_cred_ssh_custom *)cred;
 
 			rc = libssh2_userauth_publickey(
@@ -316,6 +324,7 @@ static int _git_ssh_authenticate_session(
 			break;
 		}
 		case GIT_CREDTYPE_SSH_INTERACTIVE: {
+			printf("SSH INTERACTIVE \n");
 			void **abstract = libssh2_session_abstract(session);
 			git_cred_ssh_interactive *c = (git_cred_ssh_interactive *)cred;
 
